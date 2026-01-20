@@ -145,7 +145,7 @@ function App() {
       <FloatingAddButton onClick={() => setIsAddModalOpen(true)} />
 
       <img
-        src="/Logo.png"
+        src={`${import.meta.env.BASE_URL}Logo.png`}
         alt="Trust Logo"
         className="fixed bottom-4 right-4 h-12 w-auto z-50"
       />
