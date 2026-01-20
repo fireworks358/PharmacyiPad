@@ -1,8 +1,8 @@
-const CACHE_NAME = 'pharmacy-finder-v3';
+const CACHE_NAME = 'pharmacy-finder-v4';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  '/PharmacyiPad/',
+  '/PharmacyiPad/index.html',
+  '/PharmacyiPad/manifest.json'
 ];
 
 // Install event - cache core assets
