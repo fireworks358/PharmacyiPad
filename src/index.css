@@ -1,5 +1,42 @@
 @import "tailwindcss";
 
+@theme {
+  --color-nhs-blue: #005eb8;
+  --color-nhs-dark-blue: #003087;
+  --color-nhs-green: #007f3b;
+  --color-nhs-red: #d5281b;
+  --color-nhs-yellow: #ffeb3b;
+  --color-nhs-black: #212b32;
+  --color-nhs-grey: #4c6272;
+  --color-nhs-border: #d8dde0;
+  --color-nhs-background: #f0f4f5;
+  --color-nhs-white: #ffffff;
+
+  --font-family-sans: Helvetica, Arial, sans-serif;
+
+  --font-size-nhs-body: 19px;
+  --line-height-nhs-body: 28px;
+  --font-size-nhs-body-mobile: 16px;
+  --line-height-nhs-body-mobile: 24px;
+  --font-size-nhs-heading-xl: 48px;
+  --line-height-nhs-heading-xl: 56px;
+  --font-size-nhs-heading-l: 36px;
+  --line-height-nhs-heading-l: 44px;
+  --font-size-nhs-heading-m: 26px;
+  --line-height-nhs-heading-m: 32px;
+  --font-size-nhs-heading-s: 22px;
+  --line-height-nhs-heading-s: 28px;
+  --font-size-nhs-display: 80px;
+  --line-height-nhs-display: 88px;
+  --font-size-nhs-display-location: 56px;
+  --line-height-nhs-display-location: 64px;
+
+  --min-height-touch: 44px;
+
+  --breakpoint-ipad: 768px;
+  --breakpoint-ipad-pro: 1024px;
+}
+
 /* iPad-specific global styles */
 @layer base {
   html {
