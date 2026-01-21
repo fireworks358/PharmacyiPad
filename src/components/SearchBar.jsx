@@ -1,6 +1,27 @@
+import { useEffect, useRef } from 'react';
 import { Search, X, RefreshCw } from 'lucide-react';
 
 export default function SearchBar({ searchTerm, onSearchChange, onRefresh, isRefreshing }) {
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    if (searchTerm) {
+      timeoutRef.current = setTimeout(() => {
+        onSearchChange('');
+      }, 120000);
+    }
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [searchTerm, onSearchChange]);
+
   return (
     <div className="sticky top-0 z-20 bg-nhs-blue shadow-lg px-4 py-5">
       <div className="relative max-w-5xl mx-auto flex items-center gap-3">

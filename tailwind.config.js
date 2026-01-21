@@ -21,7 +21,7 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Arial', 'Helvetica', 'sans-serif'],
+        sans: ['Helvetica', 'Arial', 'sans-serif'],
       },
       fontSize: {
         'nhs-body': ['19px', '28px'],
