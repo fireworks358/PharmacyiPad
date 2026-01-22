@@ -10,7 +10,7 @@ export default defineConfig({
     transformer: 'lightningcss',
     lightningcss: {
       targets: {
-        safari: (14 << 16), // Safari 14.0 (iPadOS 14+)
+        safari: (12 << 16), // Safari 12.0 (iOS 12+)
       },
     },
   },
