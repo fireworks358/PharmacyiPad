@@ -1,0 +1,112 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function canManageCatalogue() {
+      return signedIn()
+        && request.auth.token.firebase.sign_in_provider == 'password';
+    }
+
+    function validDrug(data) {
+      return data.keys().hasOnly([
+          'displayName', 'aliases', 'strength', 'form', 'route', 'locationIds',
+          'locationNote', 'notes', 'stockStatus', 'status', 'createdAt',
+          'createdBy', 'updatedAt', 'updatedBy'
+        ])
+        && data.displayName is string
+        && data.displayName.size() > 0
+        && data.displayName.size() <= 160
+        && data.aliases is list
+        && data.aliases.size() <= 30
+        && data.strength is string && data.strength.size() <= 80
+        && data.form is string && data.form.size() <= 80
+        && data.route is string && data.route.size() <= 80
+        && data.locationIds is list && data.locationIds.size() <= 20
+        && data.locationNote is string && data.locationNote.size() <= 160
+        && data.notes is string && data.notes.size() <= 1000
+        && data.stockStatus in ['in_stock', 'out_of_stock']
+        && data.status in ['active', 'archived'];
+    }
+
+    function validLocation(data) {
+      return data.keys().hasOnly([
+          'label', 'area', 'sortOrder', 'status', 'createdAt', 'createdBy',
+          'updatedAt', 'updatedBy'
+        ])
+        && data.label is string
+        && data.label.size() > 0
+        && data.label.size() <= 120
+        && data.area is string && data.area.size() <= 80
+        && data.sortOrder is number
+        && data.status in ['active', 'archived'];
+    }
+
+    match /admins/{userId} {
+      allow get: if signedIn() && request.auth.uid == userId;
+      allow list, create, update, delete: if false;
+    }
+
+    match /drugs/{drugId} {
+      allow get, list: if canManageCatalogue() || resource.data.status == 'active';
+      allow create, update: if canManageCatalogue() && validDrug(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /locations/{locationId} {
+      allow get, list: if canManageCatalogue() || resource.data.status == 'active';
+      allow create, update: if canManageCatalogue() && validLocation(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /reports/{reportId} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly([
+          'drugId', 'drugNameSnapshot', 'locationSnapshot', 'issueType',
+          'suggestedLocation', 'comment', 'reporterId', 'status', 'createdAt'
+        ])
+        && request.resource.data.drugId is string
+        && request.resource.data.drugNameSnapshot is string
+        && request.resource.data.drugNameSnapshot.size() > 0
+        && request.resource.data.drugNameSnapshot.size() <= 160
+        && request.resource.data.locationSnapshot is string
+        && request.resource.data.locationSnapshot.size() <= 240
+        && request.resource.data.issueType in ['missing', 'wrong_location']
+        && request.resource.data.suggestedLocation is string
+        && request.resource.data.suggestedLocation.size() <= 120
+        && request.resource.data.comment is string
+        && request.resource.data.comment.size() <= 500
+        && request.resource.data.reporterId == request.auth.uid
+        && request.resource.data.status == 'open'
+        && request.resource.data.createdAt == request.time
+        && exists(/databases/$(database)/documents/drugs/$(request.resource.data.drugId))
+        && get(/databases/$(database)/documents/drugs/$(request.resource.data.drugId)).data.status == 'active';
+      allow get, list: if canManageCatalogue();
+      allow update: if canManageCatalogue()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'status', 'resolutionNote', 'resolvedAt', 'resolvedBy'
+        ])
+        && request.resource.data.status in ['resolved', 'dismissed']
+        && request.resource.data.resolutionNote is string
+        && request.resource.data.resolutionNote.size() <= 500
+        && request.resource.data.resolvedBy == request.auth.uid
+        && request.resource.data.resolvedAt == request.time;
+      allow delete: if false;
+    }
+
+    match /auditLogs/{logId} {
+      allow get, list: if canManageCatalogue();
+      allow create: if canManageCatalogue()
+        && request.resource.data.actorId == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

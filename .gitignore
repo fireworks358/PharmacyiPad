@@ -27,3 +27,10 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+
+# Firebase local state and credentials
+.firebaserc
+.firebase/
+firebase-debug.log
+firestore-debug.log
+service-account*.json
